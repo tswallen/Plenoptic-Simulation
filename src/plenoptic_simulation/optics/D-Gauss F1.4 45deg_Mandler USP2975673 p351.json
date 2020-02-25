@@ -1,0 +1,145 @@
+[
+    {
+        "radius": 0.08824,
+        "thickness": 0.00894,
+        "material": "LAF3",
+        "ior": 1.717,
+        "ior_wavelength": 1.717,
+        "ior_ratio": 0.5824111822947,
+        "semi_aperture": 0.043,
+        "position": 0.04166,
+        "name": "Surface_01_LAF3"
+    },
+    {
+        "radius": 0.2788,
+        "thickness": 0.00078,
+        "material": "air",
+        "ior": 1.0,
+        "ior_wavelength": 1.0,
+        "ior_ratio": 1.717,
+        "semi_aperture": 0.043,
+        "position": 0.24115999999999999,
+        "name": "Surface_02_air"
+    },
+    {
+        "radius": 0.03996,
+        "thickness": 0.01348,
+        "material": "LAF21",
+        "ior": 1.788,
+        "ior_wavelength": 1.788,
+        "ior_ratio": 0.5592841163310962,
+        "semi_aperture": 0.034,
+        "position": 0.003100000000000006,
+        "name": "Surface_03_LAF21"
+    },
+    {
+        "radius": 0.08984,
+        "thickness": 0.0038799999999999998,
+        "material": "SFN64",
+        "ior": 1.706,
+        "ior_wavelength": 1.706,
+        "ior_ratio": 1.0480656506447832,
+        "semi_aperture": 0.034,
+        "position": 0.06646000000000002,
+        "name": "Surface_04_SFN64"
+    },
+    {
+        "radius": 0.026539999999999998,
+        "thickness": 0.0195,
+        "material": "air",
+        "ior": 1.0,
+        "ior_wavelength": 1.0,
+        "ior_ratio": 1.706,
+        "semi_aperture": 0.024300000000000002,
+        "position": 0.007040000000000001,
+        "name": "Surface_05_air"
+    },
+    {
+        "radius": 0.0,
+        "thickness": 0.0045,
+        "material": "air",
+        "ior": 1.0,
+        "ior_wavelength": 1.0,
+        "ior_ratio": 1.0,
+        "semi_aperture": 0.0228,
+        "position": 1.0408340855860843e-17,
+        "name": "Surface_06_air"
+    },
+    {
+        "radius": -0.1672,
+        "thickness": 0.0057599999999999995,
+        "material": "LAF21",
+        "ior": 1.788,
+        "ior_wavelength": 1.788,
+        "ior_ratio": 0.5592841163310962,
+        "semi_aperture": 0.023,
+        "position": -0.16269999999999998,
+        "name": "Surface_07_LAF21"
+    },
+    {
+        "radius": -0.08984,
+        "thickness": 0.00514,
+        "material": "air",
+        "ior": 1.0,
+        "ior_wavelength": 1.0,
+        "ior_ratio": 1.788,
+        "semi_aperture": 0.023,
+        "position": -0.07957999999999997,
+        "name": "Surface_08_air"
+    },
+    {
+        "radius": -0.03562,
+        "thickness": 0.0038799999999999998,
+        "material": "SFS5",
+        "ior": 1.762,
+        "ior_wavelength": 1.762,
+        "ior_ratio": 0.5675368898978433,
+        "semi_aperture": 0.0223,
+        "position": -0.020219999999999988,
+        "name": "Surface_09_SFS5"
+    },
+    {
+        "radius": -0.19891999999999999,
+        "thickness": 0.018,
+        "material": "LAF21",
+        "ior": 1.788,
+        "ior_wavelength": 1.788,
+        "ior_ratio": 0.9854586129753915,
+        "semi_aperture": 0.0252,
+        "position": -0.17964000000000002,
+        "name": "Surface_010_LAF21"
+    },
+    {
+        "radius": -0.04858,
+        "thickness": 0.00078,
+        "material": "air",
+        "ior": 1.0,
+        "ior_wavelength": 1.0,
+        "ior_ratio": 1.788,
+        "semi_aperture": 0.0303,
+        "position": -0.011299999999999987,
+        "name": "Surface_11_air"
+    },
+    {
+        "radius": 0.0,
+        "thickness": 0.00756,
+        "material": "LAF21",
+        "ior": 1.788,
+        "ior_wavelength": 1.788,
+        "ior_ratio": 0.5592841163310962,
+        "semi_aperture": 0.035,
+        "position": 0.03806000000000001,
+        "name": "Surface_12_LAF21"
+    },
+    {
+        "radius": -0.10658,
+        "thickness": 0.062112,
+        "material": "air",
+        "ior": 1.0,
+        "ior_wavelength": 1.0,
+        "ior_ratio": 1.788,
+        "semi_aperture": 0.0354,
+        "position": -0.060959999999999986,
+        "name": "Surface_13_air"
+    }
+]
