@@ -1,5 +1,6 @@
 import bpy
 
+
 class Test_PT_Panel(bpy.types.Panel):
     bl_idname = "CAMGEN_PT_Main"
     bl_label = "Camera Generator"

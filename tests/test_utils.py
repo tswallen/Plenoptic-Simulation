@@ -1,9 +1,9 @@
+import utils
 import unittest
 
 import sys
 sys.path.append('../src/plenoptic_simulation')
 
-import utils
 
 class TestUtils(unittest.TestCase):
     def test_str_to_float(self):
