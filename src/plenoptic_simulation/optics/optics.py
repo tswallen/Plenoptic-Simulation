@@ -32,6 +32,26 @@ def calculate_number_of_vertices(half_lens_height, surface_radius, vertex_count_
     return int(vertex_count_height / (math.asin(half_lens_height / surface_radius) / math.pi) + 0.5) * 2
 
 
+def create_glass_material(name: str, ior: float, remove_transform: bool):
+    glass_material = bpy.data.materials['Glass Material'].copy()
+    glass_material.name = f'Glass Material {name}'
+    glass_material.node_tree.nodes['IOR'].outputs['Value'].default_value = ior
+
+    if remove_transform:
+        glass_material.node_tree.links.remove(
+            glass_material.node_tree.nodes['Vector Transform.002'].outputs[0].links[0])
+
+    return glass_material
+
+
+def calculate_outer_vertex(vertices):
+    outer_vertex = vertices[0]
+    for vertex in vertices:
+        if vertex.co.z > outer_vertex.co.z:
+            outer_vertex = vertex
+    return outer_vertex
+
+
 def create_flat_surface(half_lens_height: float, ior: float, position: float, name: str):
     '''Creates a flat surface as part of the lens stack'''
     circle = add_circle({
@@ -47,20 +67,11 @@ def create_flat_surface(half_lens_height: float, ior: float, position: float, na
         'parent': bpy.data.objects['Objective']
     })
 
-    # TODO: Refactor
-    glass_material = bpy.data.materials['Glass Material'].copy()
-    glass_material.name = f'Glass Material {name}'
-    glass_material.node_tree.nodes['IOR'].outputs['Value'].default_value = ior
-
-    glass_material.node_tree.links.remove(
-        glass_material.node_tree.nodes['Vector Transform.002'].outputs[0].links[0])
-    circle.data.materials.append(glass_material)
+    circle.data.materials.append(create_glass_material(name, ior, True))
 
     bpy.ops.object.mode_set(mode="OBJECT")
-    outer_vertex = circle.data.vertices[0]
-    for vertex in circle.data.vertices:
-        if vertex.co.z > outer_vertex.co.z:
-            outer_vertex = vertex
+
+    outer_vertex = calculate_outer_vertex(circle.data.vertices)
 
     return [outer_vertex.co.x, outer_vertex.co.y, outer_vertex.co.z]
 
@@ -71,7 +82,6 @@ def create_lens_surface(vertex_count_height, vertex_count_radial, surface_radius
         flip = True
         surface_radius = -1.0 * surface_radius
 
-    # create circle
     circle = add_circle({
         'defaults': {
             'vertices': calculate_number_of_vertices(half_lens_height, surface_radius, vertex_count_height),
@@ -80,7 +90,7 @@ def create_lens_surface(vertex_count_height, vertex_count_radial, surface_radius
         }
     })
 
-    # ================================================MAGIC
+    # TODO: Refactor
     bpy.ops.object.transform_apply()
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action='DESELECT')
@@ -117,18 +127,11 @@ def create_lens_surface(vertex_count_height, vertex_count_radial, surface_radius
     circle.name = name
     circle.parent = bpy.data.objects['Objective']
     # add glass material
-    glass_material = bpy.data.materials['Glass Material'].copy()
-    glass_material.name = "Glass Material "+name
-    glass_material.node_tree.nodes['IOR'].outputs['Value'].default_value = ior
-    circle.data.materials.append(glass_material)
+    circle.data.materials.append(create_glass_material(name, ior, False))
     # return the outer vertex for housing creation
     bpy.ops.object.mode_set(mode="OBJECT")
-    outer_vertex = circle.data.vertices[0]
-    for vertex in circle.data.vertices:
-        if vertex.co.z > outer_vertex.co.z:
-            outer_vertex = vertex
+    outer_vertex = calculate_outer_vertex(circle.data.vertices)
 
-    # ================================================END MAGIC
     return [outer_vertex.co.x, outer_vertex.co.y, outer_vertex.co.z]
 
 
