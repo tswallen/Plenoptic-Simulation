@@ -1,3 +1,4 @@
+from typing import Any, List, Dict, Tuple
 import json
 import bpy
 import math
@@ -5,16 +6,16 @@ import math
 from .. import blender, config
 
 
-def open_lens_file(path: str) -> [dict]:
+def open_lens_file(path: str) -> List[Dict[str, Any]]:
     '''Opens a JSON file and returns its contents'''
     with open(path) as file:
         return json.load(file)
 
 
-def add_circle(config: dict):
+def add_circle(config: Dict[str, Any]) -> bpy.types.Object:
     '''Adds a circle'''
     bpy.ops.mesh.primitive_circle_add(**config['defaults'])
-    circle = bpy.context.active_object
+    circle: bpy.types.Object = bpy.context.active_object
     for setting, value in config.items():
         if setting is 'defaults':
             continue
@@ -22,18 +23,22 @@ def add_circle(config: dict):
     return circle
 
 
-def calculate_sagitta(half_lens_height, surface_radius):
+def calculate_sagitta(half_lens_height: float, surface_radius: float) -> float:
+    '''Calculates sagitta'''
     if half_lens_height > surface_radius:
         return surface_radius
     return surface_radius - math.sqrt(surface_radius * surface_radius - half_lens_height * half_lens_height)
 
 
-def calculate_number_of_vertices(half_lens_height, surface_radius, vertex_count_height):
+def calculate_number_of_vertices(half_lens_height: float, surface_radius: float, vertex_count_height: int) -> int:
+    '''Calculates the number of vertices'''
     return int(vertex_count_height / (math.asin(half_lens_height / surface_radius) / math.pi) + 0.5) * 2
 
 
-def create_glass_material(name: str, ior: float, remove_transform: bool):
-    glass_material = bpy.data.materials['Glass Material'].copy()
+def create_glass_material(name: str, ior: float, remove_transform: bool) -> bpy.types.Material:
+    '''Creates a glass material'''
+    glass_material: bpy.types.Material = bpy.data.materials['Glass Material'].copy(
+    )
     glass_material.name = f'Glass Material {name}'
     glass_material.node_tree.nodes['IOR'].outputs['Value'].default_value = ior
 
@@ -44,7 +49,8 @@ def create_glass_material(name: str, ior: float, remove_transform: bool):
     return glass_material
 
 
-def calculate_outer_vertex(vertices):
+def calculate_outer_vertex(vertices: bpy.types.MeshVertices) -> bpy.types.MeshVertex:
+    '''Calculates the outer vertex'''
     outer_vertex = vertices[0]
     for vertex in vertices:
         if vertex.co.z > outer_vertex.co.z:
@@ -52,9 +58,9 @@ def calculate_outer_vertex(vertices):
     return outer_vertex
 
 
-def create_flat_surface(half_lens_height: float, ior: float, position: float, name: str):
+def create_flat_surface(half_lens_height: float, ior: float, position: float, name: str) -> List[float]:
     '''Creates a flat surface as part of the lens stack'''
-    circle = add_circle({
+    circle: bpy.types.Object = add_circle({
         'defaults': {
             'vertices': 64,
             'radius': half_lens_height,
@@ -71,18 +77,20 @@ def create_flat_surface(half_lens_height: float, ior: float, position: float, na
 
     bpy.ops.object.mode_set(mode="OBJECT")
 
-    outer_vertex = calculate_outer_vertex(circle.data.vertices)
+    outer_vertex: bpy.types.MeshVertex = calculate_outer_vertex(
+        circle.data.vertices)
 
     return [outer_vertex.co.x, outer_vertex.co.y, outer_vertex.co.z]
 
 
-def create_lens_surface(vertex_count_height, vertex_count_radial, surface_radius, half_lens_height, ior, position, name):
+def create_lens_surface(vertex_count_height: int, vertex_count_radial: int, surface_radius: float, half_lens_height: float, ior: float, position: float, name: str) -> List[float]:
+    '''Creates a lens surface as part of the lens stack'''
     flip = False
     if surface_radius < 0.0:
         flip = True
         surface_radius = -1.0 * surface_radius
 
-    circle = add_circle({
+    circle: bpy.types.Object = add_circle({
         'defaults': {
             'vertices': calculate_number_of_vertices(half_lens_height, surface_radius, vertex_count_height),
             'radius': surface_radius,
@@ -130,12 +138,13 @@ def create_lens_surface(vertex_count_height, vertex_count_radial, surface_radius
     circle.data.materials.append(create_glass_material(name, ior, False))
     # return the outer vertex for housing creation
     bpy.ops.object.mode_set(mode="OBJECT")
-    outer_vertex = calculate_outer_vertex(circle.data.vertices)
+    outer_vertex: bpy.types.MeshVertex = calculate_outer_vertex(
+        circle.data.vertices)
 
     return [outer_vertex.co.x, outer_vertex.co.y, outer_vertex.co.z]
 
 
-def create_lenses(vertex_count_height: int, vertex_count_radial: int, lenses: [dict]):
+def create_lenses(vertex_count_height: int, vertex_count_radial: int, lenses: List[Dict[str, Any]]) -> Tuple[List[List[float]], List[int]]:
     '''Creates the lens stack'''
     outer_vertices, outer_lens_index = [], list(range(len(lenses)))
 
@@ -147,8 +156,8 @@ def create_lenses(vertex_count_height: int, vertex_count_radial: int, lenses: [d
             outer_vertices.append(create_flat_surface(
                 lens['semi_aperture'], lens['ior_ratio'], lens['position'], lens['name']))
             continue
-        create_lens_surface(vertex_count_height, vertex_count_radial,
-                            lens['radius'], lens['semi_aperture'], lens['ior_ratio'], lens['position'], lens['name'])
+        outer_vertices.append(create_lens_surface(vertex_count_height, vertex_count_radial,
+                                                  lens['radius'], lens['semi_aperture'], lens['ior_ratio'], lens['position'], lens['name']))
     return outer_vertices, outer_lens_index
 
 
@@ -158,8 +167,8 @@ class AddCameraOperation(bpy.types.Operator):
     bl_description = "Runs test"
 
     def execute(self, context):
-        addon_directory = bpy.utils.user_resource('SCRIPTS', "addons")
-        lens = open_lens_file(
+        addon_directory: str = bpy.utils.user_resource('SCRIPTS', "addons")
+        lens: List[Dict[str, Any]] = open_lens_file(
             f'{addon_directory}/plenoptic_simulation/optics/D-Gauss F1.4 45deg_Mandler USP2975673 p351.json')
 
         blender.initialise_cycles(bpy.data.scenes[0], config.cycles_config)
